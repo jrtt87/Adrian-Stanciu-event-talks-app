@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Talks 2026</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            color: #0056b3;
+            margin-bottom: 0;
+        }
+        header p {
+            font-size: 1.1em;
+            color: #666;
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #search-input {
+            width: 50%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .schedule-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 4px solid #0056b3;
+            background-color: #fdfdfd;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+        .schedule-item.hide {
+            display: none;
+        }
+        .schedule-item.break {
+            border-left-color: #f39c12;
+            background-color: #fef9e7;
+        }
+        .time {
+            flex: 0 0 120px;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #0056b3;
+        }
+        .break .time {
+            color: #f39c12;
+        }
+        .details {
+            flex: 1;
+        }
+        .details h2 {
+            font-size: 1.4em;
+            margin: 0 0 10px 0;
+        }
+        .details .speakers {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .details .description {
+            margin-bottom: 10px;
+        }
+        .categories span {
+            display: inline-block;
+            background-color: #e7eef6;
+            color: #0056b3;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Tech Talks 2026</h1>
+            <p>A one-day conference packed with exciting technical sessions.</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search by category (e.g., AI, Cloud)...">
+        </div>
+
+        <main id="schedule-container"></main>
+    </div>
+
+    <script>
+        const talks = [
+            {
+                title: "The Future of AI in Web Development",
+                speakers: ["Jane Doe"],
+                categories: ["AI", "WebDev", "JavaScript"],
+                description: "Exploring how artificial intelligence is shaping the future of web development, from automated coding to intelligent user interfaces."
+            },
+            {
+                title: "Scaling Your Applications with Kubernetes",
+                speakers: ["John Smith", "Emily White"],
+                categories: ["Cloud", "DevOps"],
+                description: "A deep dive into Kubernetes and best practices for deploying, scaling, and managing containerized applications in a production environment."
+            },
+            {
+                title: "Modern CSS: Beyond Flexbox and Grid",
+                speakers: ["Alex Johnson"],
+                categories: ["WebDev", "CSS"],
+                description: "Discover the latest advancements in CSS, including new layout modules, container queries, and other features that will change how you write styles."
+            },
+            {
+                title: "Building Real-Time Applications with WebSockets",
+                speakers: ["Maria Garcia"],
+                categories: ["WebDev", "Real-Time"],
+                description: "Learn the fundamentals of WebSockets and how to build interactive, real-time features like live charts and notifications."
+            },
+            {
+                title: "The Rise of Serverless Architecture",
+                speakers: ["David Chen", "Sarah Lee"],
+                categories: ["Cloud", "Serverless"],
+                description: "An introduction to serverless computing, its benefits, drawbacks, and how to get started with building serverless applications on major cloud platforms."
+            },
+            {
+                title: "Securing Your Digital Fortress: Modern Cybersecurity",
+                speakers: ["Michael Brown"],
+                categories: ["Security", "Cybersecurity"],
+                description: "A comprehensive overview of the current cybersecurity landscape and practical steps you can take to protect your applications and infrastructure."
+            }
+        ];
+
+        function renderSchedule(filter = '') {
+            const scheduleContainer = document.getElementById('schedule-container');
+            scheduleContainer.innerHTML = ''; // Clear existing schedule
+
+            const startTime = new Date();
+            startTime.setHours(10, 0, 0, 0); // Event starts at 10:00 AM
+
+            let talkCounter = 0;
+
+            for (let i = 0; i < 7; i++) { // 6 talks + 1 lunch break
+                const scheduleItem = document.createElement('div');
+                scheduleItem.classList.add('schedule-item');
+
+                const timeDiv = document.createElement('div');
+                timeDiv.classList.add('time');
+                
+                const detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('details');
+
+                const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+                timeDiv.textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+
+                if (i === 3) { // Lunch Break after 3rd talk
+                    scheduleItem.classList.add('break');
+                    const title = document.createElement('h2');
+                    title.textContent = "Lunch Break";
+                    detailsDiv.appendChild(title);
+                } else {
+                    const talk = talks[talkCounter];
+                    
+                    const title = document.createElement('h2');
+                    title.textContent = talk.title;
+
+                    const speakers = document.createElement('p');
+                    speakers.classList.add('speakers');
+                    speakers.textContent = `by ${talk.speakers.join(' & ')}`;
+
+                    const description = document.createElement('p');
+                    description.classList.add('description');
+                    description.textContent = talk.description;
+
+                    const categories = document.createElement('div');
+                    categories.classList.add('categories');
+                    talk.categories.forEach(cat => {
+                        const span = document.createElement('span');
+                        span.textContent = cat;
+                        categories.appendChild(span);
+                    });
+
+                    detailsDiv.appendChild(title);
+                    detailsDiv.appendChild(speakers);
+                    detailsDiv.appendChild(description);
+                    detailsDiv.appendChild(categories);
+
+                    // Filtering logic
+                    const lowerCaseFilter = filter.toLowerCase();
+                    const hasCategory = talk.categories.some(cat => cat.toLowerCase().includes(lowerCaseFilter));
+                    if (filter && !hasCategory) {
+                        scheduleItem.classList.add('hide');
+                    }
+
+                    talkCounter++;
+                }
+
+                scheduleItem.appendChild(timeDiv);
+                scheduleItem.appendChild(detailsDiv);
+                scheduleContainer.appendChild(scheduleItem);
+
+                // Set start time for the next item (add 10-minute break)
+                startTime.setTime(endTime.getTime() + 10 * 60 * 1000);
+            }
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            renderSchedule(e.target.value);
+        });
+
+        // Initial render
+        window.addEventListener('load', () => renderSchedule());
+    </script>
+
+</body>
+</html>
